@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [sensesagent](#sensesagent)
+  - [Development Setup:](#development-setup)
+    - [WSL and Ubuntu setup](#wsl-and-ubuntu-setup)
+    - [Fedora](#fedora)
+  - [Modifying the Code and layout of code.](#modifying-the-code-and-layout-of-code)
+    - [Code Layout:](#code-layout)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # sensesagent
 A monitoring agent to gather system metrics and send to data to backend
 
