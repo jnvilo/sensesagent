@@ -68,6 +68,7 @@ After the initial setup of the development system, we can now start hacking away
 
 After running make for the first time , you should have the current top directory  tree: 
 
+```
   ├── build
   ├── configuration.mk
   ├── LICENSE
@@ -82,6 +83,7 @@ After running make for the first time , you should have the current top director
   ├── test
   ├── tests
   └── virtualenv -> build/python/virtualenv-3.6.0
+```
 
 ### Non Git directories
 
