@@ -1,18 +1,21 @@
+# sensesagent
+A monitoring agent to gather system metrics and send to data to backend
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+**Table of Contents**  
 
-- [sensesagent](#sensesagent)
-  - [Development Setup:](#development-setup)
-    - [WSL and Ubuntu setup](#wsl-and-ubuntu-setup)
-    - [Fedora](#fedora)
-  - [Modifying the Code and layout of code.](#modifying-the-code-and-layout-of-code)
-    - [Code Layout:](#code-layout)
+- [Development Setup:](#development-setup)
+  - [WSL and Ubuntu setup](#wsl-and-ubuntu-setup)
+  - [Fedora](#fedora)
+- [Modifying the Code and layout of code.](#modifying-the-code-and-layout-of-code)
+- [Code Layout:](#code-layout)
+- [The senseagent Modules](#the-senseagent-modules)
+  - [senseagent.master](#senseagentmaster)
+  - [senseagent.collectors](#senseagentcollectors)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# sensesagent
-A monitoring agent to gather system metrics and send to data to backend
 
 ## Development Setup: 
 
@@ -60,6 +63,44 @@ After the initial setup of the development system, we can now start hacking away
     make PYTHON_VERSION=2.7.11 test # Will set virtualenv also to point to this version of python. 
 
 
-### Code Layout: 
+## Code Layout: 
+
+After running make for the first time , you should have the current top directory  tree: 
+
+  ├── build
+  ├── configuration.mk
+  ├── LICENSE
+  ├── Makefile
+  ├── make-includes
+  ├── README.md
+  ├── requirements.txt
+  ├── sensesagent
+  ├── sensesagent.egg-info
+  ├── setup.cfg
+  ├── setup.py
+  ├── test
+  ├── tests
+  └── virtualenv -> build/python/virtualenv-3.6.0
+
+Not directory build, symlink virtualenv,  and senseagent.egg-info are temporary file and are not committed into git. They are ignored using the .gitignore.
+The actual module code lives in senseagent. 
+
+## The senseagent Modules
+  
+  The senseagent module is made up of:
+    
+    senseagent.master
+    senseagent.collectors
+    
+ 
+### senseagent.master
+  TODO: Document this module
+  
+### senseagent.collectors
+The actual work of collecting metrics is implemented in the imaginatively named collectors modules. 
+  TODO: Document each collector
 
 
+  
+
+  
