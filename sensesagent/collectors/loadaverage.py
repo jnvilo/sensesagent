@@ -8,11 +8,16 @@ from future.utils import raise_with_traceback
 from future.utils import raise_from
 from future.utils import iteritems
 
+import os
+
+from jinja2 import Template
 
 from multiprocessing import cpu_count
 from sensesagent import log
 
 from sensesagent.collectors.collector import Collector
+from sensesagent.utils import DictionaryUtility
+
 
 class LoadAverageCollector(Collector):
     """
@@ -23,15 +28,27 @@ class LoadAverageCollector(Collector):
         """Implements gathering the metrics and filling up our 
         metrics object"""
         
+        
         load_1_minute, load_5_minute, load_15_minute = os.getloadavg()
         num_cpu = cpu_count()
     
-        #fill up the metric object
+        return  DictionaryUtility.to_object({ "load_1_minute": load_1_minute, 
+                 "load_5_minute": load_5_minute, 
+                 "load_15_minute": load_15_minute, 
+                 "num_cpu": num_cpu})
         
+    def process_template(self):
         
-        
+        metric = self.collect_metrics()
+        #self.template = """{ "1minute" : {{metric.load_1_minute}} }"""
+        json_str = Template(self.template).render(metric=metric)
+       
+        return json_str
     
+    def format_metric(self):
+        """Formats the metric with the given template."""
     
+        
     
     
 
