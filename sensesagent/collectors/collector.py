@@ -18,15 +18,17 @@ if platform.architecture()[0] == '64bit':
 else:
     MAX_COUNTER = (2 ** 32) - 1
 
+    
 
 class Collector(object):
     
-    def __init__(self, template=None, ):
+    def __init__(self, template_path=None):
         
         self.logger = logging.getLogger(__name__)
         self.logger.debug("Instantiating Collector")
-        self.metrics = {}
-        self.template = template
+        self.metric = {}
+        self.template_path = template_path
+        self.template = self.load_template()
     
     def collect_metrics(self):
         """Implements gathering metrics"""    
@@ -34,10 +36,20 @@ class Collector(object):
     
     def process_template(self):
         """Updates the template json """
-        pass
+        
+        raise NotImplementedError
     
     def load_template(self):
         
+        with open(self.template_path, "r") as f:
+            template = f.read()
+            return template
+        
+        
+    def gather_metric(self, name, value):
+    
         pass
     
+if __name__ == "__main__":
     
+    c = Collector()
