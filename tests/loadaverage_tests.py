@@ -8,13 +8,12 @@ class TestLoadAverageCollector(unittest.TestCase):
     
     def setUp(self):
         
-        lac = LoadAverageCollector(template="configs/loadaverage.json")
+        self.lac = LoadAverageCollector(template_path="configs/loadaverage.template")
     
-    
-    def test_can_load_template(self):
+    def test_can_process_template(self):
         
-        pass
-
+        json_str = self.lac.process_template()
+        print(json_str)
 
 if __name__ == "__main__":
     
