@@ -71,6 +71,7 @@ After running make for the first time , you should have the current top director
 ```
   ├── build
   ├── configuration.mk
+  ├── docs
   ├── LICENSE
   ├── Makefile
   ├── make-includes
