@@ -9,6 +9,7 @@ from future.utils import raise_from
 from future.utils import iteritems
 
 import os
+import logging
 
 from jinja2 import Template
 
@@ -23,6 +24,13 @@ class LoadAverageCollector(Collector):
     """
     Collects Load average 
     """
+    
+    def __init__(self, template_path=None): 
+        
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.logger.debug("Instantiating LoadAverageCollector(template_path=\"{}\")".format(template_path))
+        super().__init__(template_path=template_path)
+    
     
     def collect_metrics(self):
         """Implements gathering the metrics and filling up our 

@@ -17,6 +17,7 @@ logging.config.dictConfig({
     'handlers': {
         'default': {
             'level':'DEBUG',
+            'formatter':'standard',
             'class':'logging.StreamHandler',
         },
     },
@@ -29,4 +30,4 @@ logging.config.dictConfig({
     }
 })
 
-logger.info('It works!')
+logger.debug('It works!')

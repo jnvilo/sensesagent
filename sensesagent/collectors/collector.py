@@ -24,8 +24,8 @@ class Collector(object):
     
     def __init__(self, template_path=None):
         
-        self.logger = logging.getLogger(__name__)
-        self.logger.debug("Instantiating Collector")
+        self.logger = logging.getLogger(self.__class__.__name__)
+        #self.logger.debug("Instantiating Collector")
         self.metric = {}
         self.template_path = template_path
         self.template = self.load_template()
@@ -40,6 +40,25 @@ class Collector(object):
         raise NotImplementedError
     
     def load_template(self):
+        """
+        Loads a template used to create the json data to be sent to the 
+        server. 
+        
+        if template_path is not provided then it will look for a template 
+        using formated as  <self.__class__.__name__>.template in the 
+        following directory sequence: 
+        
+        .conf/<self.__class__.__name__>.template
+        /etc/sensesagent/conf/<self.__class__.__name__>.template
+        
+        """
+        if self.template_path == None: 
+           
+            local_path = "conf/{}.template".format(self.__class__.__name__)
+            
+            search_paths = ["conf/{}.template".format(self.__class__.__name__),
+                            "/etc/sensesagent/{}".format(local_path)
+                            ] 
         
         with open(self.template_path, "r") as f:
             template = f.read()
