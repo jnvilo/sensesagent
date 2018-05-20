@@ -1,0 +1,5 @@
+{
+    "1min" : {{metric.load_1_minute}}
+    "5min" : {{metric.load_5_minute}}
+    "15_min" : {{metric.load_15_minute}}
+}

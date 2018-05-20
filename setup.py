@@ -9,6 +9,7 @@ setup(
     packages=[PACKAGE],
     test_suite='tests',
     ## Sample entry point
+    
     #entry_points = {
     #    'console_scripts': ['my_command=packageskel.packageskel:make_template']
     #},

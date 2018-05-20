@@ -51,6 +51,8 @@ clean-build-local:
 clean-test:
 	-$(RM) .coverage
 	-$(RM) virtualenv
+	
+.PHONY: 
 
 include configuration.mk
 include make-includes/python.mk

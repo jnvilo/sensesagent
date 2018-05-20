@@ -3,12 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SensesAgent's documentation!
-=======================================
+SensesAgent Users Guide!
+***************************************
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+.. automodule:: sensesagent
+   :members:
+   
+.. automodule:: sensesagent.collectors
+   :members: 
+   
+.. automodule:: sensesagent.collectors.loadaverage
+   :members:
+
 
 
 

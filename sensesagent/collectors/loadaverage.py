@@ -19,7 +19,6 @@ from sensesagent import log
 from sensesagent.collectors.collector import Collector
 from sensesagent.utils import DictionaryUtility
 
-
 class LoadAverageCollector(Collector):
     """
     Collects Load average 
