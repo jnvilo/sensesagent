@@ -9,6 +9,9 @@ from future.utils import iteritems
 
 from builtins import FileExistsError
 from pathlib import Path
+import threading
+from time import sleep
+
 #The above future imports helps/ensures that the code is compatible
 #with Python 2 and Python 3
 #Read more at http://python-future.org/compatible_idioms.html
@@ -108,6 +111,7 @@ class SensesAgent(object):
         #start_dir= Path(curr_dir.parent, "tests").as_posix() 
         sa = SensesAgentConfig(start_dir)
         self.config = sa.config
+        self.threads = []
     
      
     def get_collector_class(self,fqcn):
@@ -130,8 +134,25 @@ class SensesAgent(object):
     
 
     def run_collectors(self):
-        pass
-
+        
+        fqcn = "loadaverage.LoadAverageCollector"
+        t = threading.Thread(target=self.collector_runner, args=(fqcn,))
+        self.threads.append(t)
+        t.start()
+        print("thread running")
+        t.join()
+    def collector_runner(self, fqcn):
+        
+        MyCollector = self.get_collector_class(fqcn)
+        print("colelctor_runner")
+        #TODO: This should be loaded from a file.
+        template_path = "/home/jason/Projects/sensesagent/tests/conf/collector_templates/loadaverage.template"
+        collector = MyCollector(template_path = template_path)
+                
+        while 1:
+            json_str = collector.process_template()
+            sleep(5)
+            print(json_str)
 
 class SensesHttpPublisher(object):
     """Recieves data via a queue and takes care of sending the data."""

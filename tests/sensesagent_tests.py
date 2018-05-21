@@ -52,3 +52,9 @@ class TestSensesAgent(unittest.TestCase):
     
         sa.get_collector_class("loadaverage.LoadAverageCollector")
         
+    def test_run_collectors(self):
+        
+        start_dir = Path(os.path.dirname(os.path.realpath(__file__)))
+        sa = SensesAgent(start_dir)       
+        sa.run_collectors()
+        

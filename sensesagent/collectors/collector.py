@@ -53,9 +53,7 @@ class Collector(object):
         
         """
         if self.template_path == None: 
-           
             local_path = "conf/{}.template".format(self.__class__.__name__)
-            
             search_paths = ["conf/{}.template".format(self.__class__.__name__),
                             "/etc/sensesagent/{}".format(local_path)
                             ] 
