@@ -8,12 +8,12 @@ class CollectorTestCase(unittest.TestCase):
     
     def setUp(self):
         
-        self.lac = Collector(template_path="configs/collector.template")
+        self.lac = Collector(template_path="conf/collector_templates/collector.template")
         
     
     def test_can_load_template(self):
         
-        with open("configs/collector.template", "r") as f:
+        with open("conf/collector_templates/collector.template", "r") as f:
             template = f.read()
         
         
