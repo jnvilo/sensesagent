@@ -2,28 +2,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 from __future__ import division
 
-
-"""
-SensesAgent is a systems metric collection framework and runtime. It can be used
-as provided to gather system metrics and send gathered metrics to an online service. 
-
-SensesAgent is developed for SensesCloud. However it can be easily configured via the 
-sensesagent.conf file to upload metrics to a different service. The format of the 
-data sent can also be easily modified through the data template files. 
-
-Configuration
-====================
-
-Configuration is done through conf/sensesagent.conf. 
-
-
-"""
-
-version = "0.0.1"
-
-
-
-
 from future.utils import raise_
 from future.utils import raise_with_traceback
 from future.utils import raise_from
@@ -34,6 +12,8 @@ from pathlib import Path
 import threading
 from time import sleep
 
+version = "0.0.1"
+
 #The above future imports helps/ensures that the code is compatible
 #with Python 2 and Python 3
 #Read more at http://python-future.org/compatible_idioms.html
@@ -42,17 +22,20 @@ import logging
 import sys
 import os
 import importlib
+from threading import Thread
 
 from sensesagent import log
 from sensesagent.exceptions import ConfigFileNotFound
 
 from configobj import ConfigObj
 
+
 class SensesAgentConfig(object):
-
-    def __init__(self, start_dir): 
-        pass
-
+    """
+    Contains the configuration for sensesagent. It loads the sensesagent.conf 
+    configuration file and makes them available as the .config object 
+    dictionary. 
+    """
 
     def __init__(self, start_dir, config_path=None): 
 
@@ -63,9 +46,28 @@ class SensesAgentConfig(object):
         self._config_path = config_path
         self._config = None
 
-
+    
     @property
     def config(self):
+        """configobject property. This contains the dictionary from 
+        sensesagent.ini file. Example function with types documented in the docstring.
+
+        `PEP 484`_ type annotations are supported. If attribute, parameter, and
+        return types are annotated according to `PEP 484`_, they do not need to be
+        included in the docstring:
+    
+        Args:
+            param1 (int): The first parameter.
+            param2 (str): The second parameter.
+    
+        Returns:
+            bool: The return value. True for success, False otherwise.
+    
+        .. _PEP 484:
+            https://www.python.org/dev/peps/pep-0484/
+    
+        """
+    
         if self._config == None: 
             self._config = self.load_config()
 
@@ -77,10 +79,25 @@ class SensesAgentConfig(object):
 
     @property
     def config_path(self): 
+        """
+        Args:
+            path (str): The path of the file to wrap
+            field_storage (FileStorage): The :class:`FileStorage` instance to wrap
+            temporary (bool): Whether or not to delete the file when the File
+                instance is destructed
+        
+        Returns:
+            BufferedFileStorage: A buffered writable file descripto        
+        """
+        
         if self._config_path == None: 
             return self.find_config_path()
         else: 
             return self._config_path
+        
+    @property
+    def collectors(self):
+        pass
 
     def load_config(self):
 
@@ -113,6 +130,8 @@ class SensesAgentConfig(object):
         #try or die trying
         raise ConfigFileNotFound("Config File Not Found.")
 
+
+    
 
 class SensesAgent(object):
     """
@@ -152,6 +171,10 @@ class SensesAgent(object):
 
 
     def run_collectors(self):
+        """
+        Iterates through the list of collectors, ensuring to load up their 
+        configurations from the config file.
+        """
 
         fqcn = "loadaverage.LoadAverageCollector"
         t = threading.Thread(target=self.collector_runner, args=(fqcn,))
@@ -160,17 +183,15 @@ class SensesAgent(object):
         print("thread running")
         t.join()
 
-    def collector_runner(self, fqcn):
 
+    def collector_runner(self, fqcn):
+        """
+        This code runs inside a thread started by self.run_collectors. Its job 
+        is to load the collector class provided in the fqcn, and then 
+        pump it for data. 
+        """
+        
         MyCollector = self.get_collector_class(fqcn)
-        print("colelctor_runner")
-        
-        #Template paths are relative to the conf directory. 
-        #
-        
-        
-        
-        #template_path = "/home/jason/Projects/sensesagent/tests/conf/collector_templates/loadaverage.template"
         collector = MyCollector()
 
         while 1:
@@ -178,7 +199,8 @@ class SensesAgent(object):
             sleep(5)
             print(json_str)
 
-class SensesHttpPublisher(object):
+
+class SensesHttpPublisher(Thread):
     """Recieves data via a queue and takes care of sending the data."""
 
 

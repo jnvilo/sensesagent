@@ -54,7 +54,7 @@ class LoadAverageCollector(Collector):
     
     def format_metric(self):
         """Formats the metric with the given template."""
-    
+        pass
         
     
     

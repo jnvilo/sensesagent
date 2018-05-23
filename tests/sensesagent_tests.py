@@ -4,18 +4,20 @@ import mock
 import os.path
 from pathlib import Path 
 
+import logging
 from tests.utilities import module_function_name
 
-from sensesagent.main import SensesAgentConfig
-from sensesagent.main import SensesAgent
+from sensesagent  import SensesAgentConfig
+from sensesagent  import SensesAgent
 
 class TestSensesAgentConfig(unittest.TestCase):
     
     #@mock.patch(module_function_name(print))
     #def test_should_print_hello_world(self, mock_print):
-       
-       #pass
-
+    
+    def setUp(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+      
     def test_can_load_config(self):
         
         pass
@@ -42,6 +44,20 @@ class TestSensesAgentConfig(unittest.TestCase):
         sa = SensesAgentConfig(start_dir)
         sa.config 
            
+    def test_get_collectors(self):
+        
+        curr_path = Path(os.path.dirname(os.path.realpath(__file__)))
+        start_dir  = curr_path.parent.as_posix()
+        
+        saconfig = SensesAgentConfig(start_dir)
+        print(saconfig.config_path)
+        print(saconfig.start_dir)
+        
+        self.logger.info("Loading Collectors config")
+
+        for collector in saconfig.config.get("Collectors"):
+            self.logger.info("Loaded collector: {}".format(collector))
+        
         
 class TestSensesAgent(unittest.TestCase):
     

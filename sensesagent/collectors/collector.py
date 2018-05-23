@@ -28,7 +28,7 @@ class TemplateLoader(object):
 
 class Collector(object):
     
-    def __init__(self, template_path=None):
+    def __init__(self, template_path=None, metric=None):
         
         self.logger = logging.getLogger(self.__class__.__name__)
         #self.logger.debug("Instantiating Collector")
