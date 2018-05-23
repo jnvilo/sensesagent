@@ -10,8 +10,11 @@ from future.utils import iteritems
 from builtins import FileExistsError
 from pathlib import Path
 import threading
+import simplejson as json
+from queue import Queue
 from time import sleep
 
+from pprint import pprint
 version = "0.0.1"
 
 #The above future imports helps/ensures that the code is compatible
@@ -23,11 +26,12 @@ import sys
 import os
 import importlib
 from threading import Thread
+from configobj import ConfigObj
 
 from sensesagent import log
 from sensesagent.exceptions import ConfigFileNotFound
 
-from configobj import ConfigObj
+
 
 
 class SensesAgentConfig(object):
@@ -145,10 +149,12 @@ class SensesAgent(object):
 
     def __init__(self, start_dir, config_path="conf"): 
  
+        self.logger = logging.getLogger(self.__class__.__name__)
         #start_dir= Path(curr_dir.parent, "tests").as_posix() 
         sa = SensesAgentConfig(start_dir)
         self.config = sa.config
         self.threads = []
+        self.queue = Queue
 
 
     def get_collector_class(self,fqcn):
@@ -175,30 +181,59 @@ class SensesAgent(object):
         Iterates through the list of collectors, ensuring to load up their 
         configurations from the config file.
         """
+       
+        collectors_dict = self.config["Collectors"]
+        
+        for x in collectors_dict: 
+            config = collectors_dict[x]
+            t = threading.Thread(target=self.collector_runner, args=(config,))
+            self.threads.append(t)
+            t.start()
+        
+        while 1:
+            sleep(1)
 
-        fqcn = "loadaverage.LoadAverageCollector"
-        t = threading.Thread(target=self.collector_runner, args=(fqcn,))
-        self.threads.append(t)
-        t.start()
-        print("thread running")
-        t.join()
-
-
-    def collector_runner(self, fqcn):
+    def collector_runner(self, config):
         """
         This code runs inside a thread started by self.run_collectors. Its job 
         is to load the collector class provided in the fqcn, and then 
         pump it for data. 
-        """
         
+        
+        config is a dictionary containing information about the collector
+        
+        For example
+         {'class': 'loadaverage.LoadAverageCollector',
+          'device_key': 'MoBo5eQqRZ',
+          'device_secure_id': 'WMyQTsETnC',
+          'name': 'SystemCollector',
+          'update': '5'}
+         """
+        
+        # Get the class for the collector because this is what is used to 
+        # load it. 
+        fqcn = config.get("class")
         MyCollector = self.get_collector_class(fqcn)
-        collector = MyCollector()
-
+        
+        #we pass the config dict to the collector so as to 
+        #make it available for use in the template
+        collector = MyCollector(config=config)
+        
         while 1:
-            json_str = collector.process_template()
-            sleep(5)
-            print(json_str)
-
+            #Collector is running. Gather data from this thread
+            
+            json_str = collector.json
+            self.logger.debug(json_str)
+            
+            # We turn the data into a dict via json.loads for two reasons
+            # 1. to ensure that the json string is valid
+            # 2. posting the data requires it to be in dict format
+            metric_data = json.loads(json_str)
+        
+            #get the update interval or use a default of 600 seconds
+            update_interval = config.get("update", 600)
+            sleep(update_interval)            
+            
 
 class SensesHttpPublisher(Thread):
     """Recieves data via a queue and takes care of sending the data."""
@@ -207,7 +242,6 @@ class SensesHttpPublisher(Thread):
     def __init__(self, data_queue):
         pass
 
-
     def run(self):
         """
         Posts the data via http post. 
@@ -215,18 +249,11 @@ class SensesHttpPublisher(Thread):
         pass
 
 
-
-
-
-
 def dev(): 
 
     """
     This is only used as an entry point to test the system during development.
     """
-
-    #where are we 
-
 
     curr_dir =  Path(os.path.dirname(os.path.realpath(__file__)))
     #During Development we want to use the config files that is inside ../test/

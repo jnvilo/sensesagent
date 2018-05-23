@@ -8,11 +8,18 @@ from future.utils import raise_with_traceback
 from future.utils import raise_from
 from future.utils import iteritems
 
+
+from jinja2 import Template
+
+
 import platform
 import logging 
 from pathlib import Path 
 
 from sensesagent import log
+from sensesagent.utils import DictionaryUtility
+
+
 
 if platform.architecture()[0] == '64bit':
     MAX_COUNTER = (2 ** 64) - 1
@@ -28,24 +35,45 @@ class TemplateLoader(object):
 
 class Collector(object):
     
-    def __init__(self, template_path=None, metric=None):
+    def __init__(self, template_path=None, metric=None, config=None):
         
-        self.logger = logging.getLogger(self.__class__.__name__)
-        #self.logger.debug("Instantiating Collector")
-        self.metric = {}
+        cls_name = self.__class__.__name__
+        
+        if metric is None:
+            metric= {}
+        self.logger = logging.getLogger(cls_name)
+        self.logger.debug("Instantiating {}".format(cls_name))
+        self.metric_dict = metric
         self.template_path = template_path
         self.template = self.load_template()
+        self.config = config
     
+        #Convert the config into a dictionary 
+        
+        self.metric_dict.update( {"config": config} ) 
+        
+        
     
+    @property
+    def json(self):
+        return self.process_template()
     
+    @property 
+    def metric(self):
+        """
+        Returns a metric object
+        """
+        # this is just a facade for collect_metrics. Will 
+        # rewrite this to use a MetricObject and migrate 
+        # processing to it. 
+        #return DictionaryUtility().to_object(self.metric_dict)
+        #the metric 
+        
+        
     def collect_metrics(self):
         """Implements gathering metrics"""    
         raise NotImplementedError
     
-    def process_template(self):
-        """Updates the template json """
-        
-        raise NotImplementedError
     
     def load_template(self):
         """
@@ -81,7 +109,28 @@ class Collector(object):
             with open(self.template_path, "r") as f:
                 template = f.read()
                 return template            
-            
+    
+    def process_template(self):
+        """
+        Applies the metric dictionary to the template and returns it as 
+        a json str.
+        """
+        # Call collect_metrics to ensure we update the metric_dict which 
+        # contains all the available metrics that the template will use. 
+        self.collect_metrics()
+        
+        #The jinja2 template
+        
+        json_str = Template(self.template).render(metric=self.metric_dict)
+       
+        return json_str
+     
+    
+    def add_metric(self, name, value):
+        self.metric_dict.update({ name:value})
+          
+          
+          
 def gather_metric(self, name, value):
     
         pass
