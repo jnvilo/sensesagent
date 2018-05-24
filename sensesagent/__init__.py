@@ -275,15 +275,18 @@ class SensesHttpPublisher(Thread):
         """
         
         url = self.config["Main"]["url"]
+        headers = {'Content-Type': 'application/json'}
+        
         while True: 
             metric_data = self.data_queue.get()
             
             
             print(metric_data)
-            
+            import simplejson as json
             try: 
-                r = requests.post(url, data=metric_data)
+                r = requests.post(url, data=json.dumps(metric_data), headers=headers)
                 print(r.status_code)
+              
             except Exception as e: 
                 msg = "Failed to post : {}".format(metric_data)
                 self.logger.debug(msg)
@@ -307,3 +310,6 @@ def dev():
 if __name__ == "__main__":
 
     dev()
+    
+    r = requests.post(url)
+    
