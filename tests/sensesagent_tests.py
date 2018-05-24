@@ -43,6 +43,8 @@ class TestSensesAgentConfig(unittest.TestCase):
         
         sa = SensesAgentConfig(start_dir)
         sa.config 
+        print(sa.config)
+        print(sa.config["Main"]["url"])
            
     def test_get_collectors(self):
         
@@ -52,7 +54,7 @@ class TestSensesAgentConfig(unittest.TestCase):
         saconfig = SensesAgentConfig(start_dir)
         print(saconfig.config_path)
         print(saconfig.start_dir)
-        
+
         self.logger.info("Loading Collectors config")
 
         for collector in saconfig.config.get("Collectors"):

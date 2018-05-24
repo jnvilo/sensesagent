@@ -12,8 +12,9 @@ from pathlib import Path
 import threading
 import simplejson as json
 from queue import Queue
+import queue
 from time import sleep
-
+import requests
 from pprint import pprint
 version = "0.0.1"
 
@@ -49,6 +50,9 @@ class SensesAgentConfig(object):
 
         self._config_path = config_path
         self._config = None
+        
+       
+        
 
     
     @property
@@ -71,7 +75,7 @@ class SensesAgentConfig(object):
             https://www.python.org/dev/peps/pep-0484/
     
         """
-    
+       
         if self._config == None: 
             self._config = self.load_config()
 
@@ -154,9 +158,13 @@ class SensesAgent(object):
         sa = SensesAgentConfig(start_dir)
         self.config = sa.config
         self.threads = []
-        self.queue = Queue
-
-
+        self.metric_queue = queue.Queue()
+      
+        senses_http_pub = SensesHttpPublisher(data_queue=self.metric_queue, 
+                                              config=self.config)
+        senses_http_pub.start()
+        
+        
     def get_collector_class(self,fqcn):
         """
         Load a class using its fully qualified class name
@@ -219,6 +227,8 @@ class SensesAgent(object):
         #make it available for use in the template
         collector = MyCollector(config=config)
         
+        x = queue.Queue()
+        
         while 1:
             #Collector is running. Gather data from this thread
             
@@ -230,23 +240,53 @@ class SensesAgent(object):
             # 2. posting the data requires it to be in dict format
             metric_data = json.loads(json_str)
         
+        
+            self.metric_queue.put(metric_data)
+            
             #get the update interval or use a default of 600 seconds
             update_interval = config.get("update", 600)
-            sleep(update_interval)            
+            sleep(int(update_interval))            
             
 
 class SensesHttpPublisher(Thread):
     """Recieves data via a queue and takes care of sending the data."""
 
-
-    def __init__(self, data_queue):
-        pass
+    def __init__(self, data_queue, group=None, target=None, name=None,
+                 args=(), kwargs=None, *, daemon=None, config):
+        
+        super().__init__(group=group, target=target, name=name,
+                             daemon=daemon)
+        self.args = args
+        self.kwargs = kwargs
+        
+        class_name = self.__class__.__name__
+        self.logger = logging.getLogger(class_name)
+        self.logger.debug("Instanciating SensesHttpPublisher Thread")
+        self.data_queue = data_queue
+        
+        #config object is made available to all publishers .
+        self.config = config 
+        
+    
 
     def run(self):
         """
         Posts the data via http post. 
         """
-        pass
+        
+        url = self.config["Main"]["url"]
+        while True: 
+            metric_data = self.data_queue.get()
+            
+            
+            print(metric_data)
+            
+            try: 
+                r = requests.post(url, data=metric_data)
+                print(r.status_code)
+            except Exception as e: 
+                msg = "Failed to post : {}".format(metric_data)
+                self.logger.debug(msg)
 
 
 def dev(): 

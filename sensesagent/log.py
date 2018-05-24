@@ -30,4 +30,4 @@ logging.config.dictConfig({
     }
 })
 
-logger.debug('It works!')
+logger.info("Logging config imported")
