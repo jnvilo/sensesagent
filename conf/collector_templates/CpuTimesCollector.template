@@ -1,0 +1,19 @@
+
+{
+    "DeviceName":  "{{metric.config.device_name}}", 
+    "DeviceSecureID": "{{metric.config.device_secure_id}}",
+    "DeviceKey": "{{metric.config.device_key}}",
+    "Bag": {
+        "cpu_percent": {{metric.cpu_percent}},   
+         "user": {{metric.user}},   
+         "nice": {{metric.nice}},   
+         "idle": {{metric.idle}},   
+         "iowait": {{metric.iowait}},   
+         "irq": {{metric.irq}},   
+         "soft_irq": {{metric.soft_irq}},   
+         "guest": {{metric.guest}} 
+
+    }         
+}
+
+
