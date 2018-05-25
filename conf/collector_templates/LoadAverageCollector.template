@@ -6,8 +6,7 @@
     "Bag": {
         "1minute" : {{metric.load_1_minute}},
         "5minute" : {{metric.load_5_minute}},
-        "15minute": {{metric.load_15_minute}},
-        "num_cpu" : {{metric.num_cpu}}
+        "15minute": {{metric.load_15_minute}}
     }         
 }
 
