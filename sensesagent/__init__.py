@@ -10,6 +10,7 @@ from future.utils import iteritems
 from builtins import FileExistsError
 from pathlib import Path
 import threading
+from datetime import datetime
 import simplejson as json
 from queue import Queue
 import queue
@@ -167,8 +168,18 @@ class SensesAgent(object):
         
     def get_collector_class(self,fqcn):
         """
-        Load a class using its fully qualified class name
+        Loads the collector class. The collector is loaded as a module from 
+        pythons sys.path. It also searches for the module 
+        
+
+        Args:
+            fqcn (str): The Fully qualified class name of the Collector class. By default sensesagent looks for these in sensesagent.collectors. 
+        
+        Returns:
+            Collector Class: A python class that implements sensesagent.collectors.Collector        
         """
+        
+    
 
         #TODO: Add more paths here to search for more collectors. 
         search_paths = ["sensesagent.collectors",]
@@ -241,8 +252,12 @@ class SensesAgent(object):
             metric_data = json.loads(json_str)
         
         
+            #We automatically add the timestamp
+            metric_data["DeviceTimeStamp"] =  int(datetime.utcnow().timestamp())
+            
             self.metric_queue.put(metric_data)
             
+            pprint(metric_data)
             #get the update interval or use a default of 600 seconds
             update_interval = config.get("update", 600)
             sleep(int(update_interval))            
@@ -267,8 +282,6 @@ class SensesHttpPublisher(Thread):
         #config object is made available to all publishers .
         self.config = config 
         
-    
-
     def run(self):
         """
         Posts the data via http post. 
@@ -283,8 +296,11 @@ class SensesHttpPublisher(Thread):
             
             print(metric_data)
             import simplejson as json
+            data = json.dumps(metric_data)
+            print(data)
+            
             try: 
-                r = requests.post(url, data=json.dumps(metric_data), headers=headers)
+                r = requests.post(url, data=data, headers=headers)
                 print(r.status_code)
               
             except Exception as e: 
