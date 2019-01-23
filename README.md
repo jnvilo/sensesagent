@@ -52,9 +52,11 @@ Using Fedora is same as in WSL or Ubuntu above except that we install the requir
 
 or if you don't want the whole development environment install only the required:
 
-...
+
+```
   # dnf -y install sqlite-devel openssl-devel libtiff-devel openjpeg-devel openjpeg2-devel libjpeg-turbo-devel  zlib-devel  freetype-devel lcms-devel lcms2-devel libkexif-devel 
-...
+```
+
 
 After running the above commands as root, or via sudo, we can now do 
 
